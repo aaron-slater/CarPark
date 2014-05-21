@@ -47,6 +47,10 @@ public class CarPark {
 	 currentSmallCars,
 	 currentMotorcycle;
 	
+	public ArrayList <String> inQueue;
+	public ArrayList <Vehicle> turnedAway;
+	
+	
 	
 	/**
 	 * CarPark constructor sets the basic size parameters. 
@@ -89,6 +93,7 @@ public class CarPark {
 	 * @throws SimulationException if vehicle is currently queued or parked
 	 */
 	public void archiveNewVehicle(Vehicle v) throws SimulationException {
+		turnedAway.add(v);
 	}
 	
 	/**
@@ -97,6 +102,7 @@ public class CarPark {
 	 * @throws VehicleException if one or more vehicles not in the correct state or if timing constraints are violated
 	 */
 	public void archiveQueueFailures(int time) throws VehicleException {
+		
 	}
 	
 	/**
@@ -104,10 +110,12 @@ public class CarPark {
 	 * @return true if car park empty, false otherwise
 	 */
 	public boolean carParkEmpty() {
-		if ((carSpacesLeft + smallCarSpacesLeft + motorcycleSpacesLeft) != ){
+		if ((carSpacesLeft + smallCarSpacesLeft + motorcycleSpacesLeft) > 0) {
+			return true;
+		}
+		else {
 			return false;
 		}
-		
 	}
 	
 	/**
@@ -132,6 +140,7 @@ public class CarPark {
 	 * @throws VehicleException if vehicle not in the correct state 
 	 */
 	public void enterQueue(Vehicle v) throws SimulationException, VehicleException {
+		
 	}
 	
 	
@@ -145,6 +154,7 @@ public class CarPark {
 	 * constraints are violated
 	 */
 	public void exitQueue(Vehicle v,int exitTime) throws SimulationException, VehicleException {
+		
 	}
 	
 	/**
@@ -241,6 +251,7 @@ public class CarPark {
 	 * @return number of vehicles in the queue
 	 */
 	public int numVehiclesInQueue() {
+		return inQueue.size();
 	}
 	
 	/**

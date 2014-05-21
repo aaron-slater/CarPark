@@ -43,6 +43,9 @@ import asgn2Simulators.Constants;
  *
  */
 public abstract class Vehicle {
+	boolean hasParked,
+	hasQueued,
+	wasSatisfied;
 	
 	/**
 	 * Vehicle Constructor 
@@ -52,6 +55,9 @@ public abstract class Vehicle {
 	 * @throws VehicleException if arrivalTime is <= 0 
 	 */
 	public Vehicle(String vehID,int arrivalTime) throws VehicleException  {
+		if (arrivalTime <= 0){
+			throw new VehicleException("Invalid arrival time");
+		}
 	}
 
 	/**
@@ -64,6 +70,16 @@ public abstract class Vehicle {
 	 *         or if intendedDuration is less than the minimum prescribed in asgnSimulators.Constants
 	 */
 	public void enterParkedState(int parkingTime, int intendedDuration) throws VehicleException {
+		if (hasParked = true){
+			throw new VehicleException("This vehicle is already parked");
+		}
+		if (parkingTime < 0){
+			throw new VehicleException("Invalid Parking Time");
+		}
+		if (intendedDuration > Constants.MINIMUM_STAY){
+			throw new VehicleException("duration of stay is too short");
+		}
+		hasParked = true;
 	}
 	
 	/**
@@ -72,6 +88,10 @@ public abstract class Vehicle {
 	 * @throws VehicleException if the vehicle is already in a queued or parked state
 	 */
 	public void enterQueuedState() throws VehicleException {
+		if ((hasQueued = true) || (hasParked = true)){
+			throw new VehicleException("This Vehicle is already parked or in Queue");
+		}
+		hasQueued = true;
 	}
 	
 	/**
@@ -81,6 +101,10 @@ public abstract class Vehicle {
 	 * 		  state or if the revised departureTime < parkingTime
 	 */
 	public void exitParkedState(int departureTime) throws VehicleException {
+		if ((hasParked = false) || (hasQueued = true)){
+			throw new VehicleException("this vehicle is not parked or is in a queue");
+		}
+		
 	}
 
 	/**
@@ -99,6 +123,7 @@ public abstract class Vehicle {
 	 * @return the arrivalTime
 	 */
 	public int getArrivalTime() {
+		
 	}
 	
 	/**
@@ -123,6 +148,7 @@ public abstract class Vehicle {
 	 * @return the vehID
 	 */
 	public String getVehID() {
+		return 
 	}
 
 	/**
@@ -130,6 +156,7 @@ public abstract class Vehicle {
 	 * @return true if the vehicle is in a parked state; false otherwise
 	 */
 	public boolean isParked() {
+		return hasParked;
 	}
 
 	/**
@@ -137,6 +164,7 @@ public abstract class Vehicle {
 	 * @return true if vehicle is in a queued state, false otherwise 
 	 */
 	public boolean isQueued() {
+		return hasQueued;
 	}
 	
 	/**
@@ -153,6 +181,7 @@ public abstract class Vehicle {
 	 */
 	@Override
 	public String toString() {
+		return this.toString();
 	}
 
 	/**

@@ -111,7 +111,7 @@ public abstract class Vehicle {
 			  public void run() {
 			    Vehicle.this.timeQueued++;
 			  }
-			}, 00*05*00, 00*05*00);
+			}, 00*01*00, 00*01*00);
 	}
 	
 	/**

@@ -10,8 +10,14 @@
  */
 package asgn2Vehicles;
 
+//import asgn2CarParks.CarPark;
 import asgn2Exceptions.VehicleException;
 import asgn2Simulators.Constants;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+//import com.sun.corba.se.impl.orbutil.closure.Constant;
 
 
 
@@ -43,9 +49,12 @@ import asgn2Simulators.Constants;
  *
  */
 public abstract class Vehicle {
-	boolean hasParked,
-	hasQueued,
+	boolean isParked,
+	inQueue,
 	wasSatisfied;
+	public String VehicleID;
+	public int timeOfArrival, timeQueued, timeDeparted, timeParked, timeExitedQueue;
+	public Timer queueTimer;
 	
 	/**
 	 * Vehicle Constructor 
@@ -58,8 +67,11 @@ public abstract class Vehicle {
 		if (arrivalTime <= 0){
 			throw new VehicleException("Invalid arrival time");
 		}
+		
+		this.VehicleID = vehID;
+		this.timeOfArrival = arrivalTime;
+		
 	}
-
 	/**
 	 * Transition vehicle to parked state (mutator)
 	 * Parking starts on arrival or on exit from the queue, but time is set here
@@ -70,7 +82,7 @@ public abstract class Vehicle {
 	 *         or if intendedDuration is less than the minimum prescribed in asgnSimulators.Constants
 	 */
 	public void enterParkedState(int parkingTime, int intendedDuration) throws VehicleException {
-		if (hasParked = true){
+		if (isParked){
 			throw new VehicleException("This vehicle is already parked");
 		}
 		if (parkingTime < 0){
@@ -79,7 +91,8 @@ public abstract class Vehicle {
 		if (intendedDuration > Constants.MINIMUM_STAY){
 			throw new VehicleException("duration of stay is too short");
 		}
-		hasParked = true;
+		this.isParked = true;
+		this.timeParked = parkingTime;
 	}
 	
 	/**
@@ -88,10 +101,17 @@ public abstract class Vehicle {
 	 * @throws VehicleException if the vehicle is already in a queued or parked state
 	 */
 	public void enterQueuedState() throws VehicleException {
-		if ((hasQueued = true) || (hasParked = true)){
+		if ((inQueue) || (isParked)){
 			throw new VehicleException("This Vehicle is already parked or in Queue");
 		}
-		hasQueued = true;
+		this.inQueue = true;
+		
+		queueTimer.schedule(new TimerTask() {
+			  @Override
+			  public void run() {
+			    Vehicle.this.timeQueued++;
+			  }
+			}, 00*05*00, 00*05*00);
 	}
 	
 	/**
@@ -101,9 +121,11 @@ public abstract class Vehicle {
 	 * 		  state or if the revised departureTime < parkingTime
 	 */
 	public void exitParkedState(int departureTime) throws VehicleException {
-		if ((hasParked = false) || (hasQueued = true)){
+		if ((!isParked) || (inQueue)){
 			throw new VehicleException("this vehicle is not parked or is in a queue");
 		}
+		this.timeDeparted = departureTime;
+		this.isParked = false;
 		
 	}
 
@@ -116,6 +138,12 @@ public abstract class Vehicle {
 	 *  exitTime is not later than arrivalTime for this vehicle
 	 */
 	public void exitQueuedState(int exitTime) throws VehicleException {
+		if ((isParked) || (!inQueue)) {
+			throw new VehicleException("That vehicle is either parked or not in the parking queue.");
+		}
+		this.timeExitedQueue = exitTime;
+		this.inQueue = false;
+		this.isParked = true;
 	}
 	
 	/**
@@ -123,7 +151,7 @@ public abstract class Vehicle {
 	 * @return the arrivalTime
 	 */
 	public int getArrivalTime() {
-		
+		return this.timeOfArrival;
 	}
 	
 	/**
@@ -133,6 +161,13 @@ public abstract class Vehicle {
 	 * @return the departureTime
 	 */
 	public int getDepartureTime() {
+		
+		if (!isParked){
+			return 0;
+		}
+		else{
+			return this.timeDeparted;
+		}
 	}
 	
 	/**
@@ -141,6 +176,13 @@ public abstract class Vehicle {
 	 * @return the parkingTime
 	 */
 	public int getParkingTime() {
+		
+		if (!isParked) {
+			return 0;
+		}
+		else {
+			return this.timeParked;
+		}
 	}
 
 	/**
@@ -148,7 +190,7 @@ public abstract class Vehicle {
 	 * @return the vehID
 	 */
 	public String getVehID() {
-		return 
+		return this.VehicleID;
 	}
 
 	/**
@@ -156,7 +198,7 @@ public abstract class Vehicle {
 	 * @return true if the vehicle is in a parked state; false otherwise
 	 */
 	public boolean isParked() {
-		return hasParked;
+		return isParked;
 	}
 
 	/**
@@ -164,7 +206,7 @@ public abstract class Vehicle {
 	 * @return true if vehicle is in a queued state, false otherwise 
 	 */
 	public boolean isQueued() {
-		return hasQueued;
+		return inQueue;
 	}
 	
 	/**
@@ -174,6 +216,19 @@ public abstract class Vehicle {
 	 * @return true if satisfied, false if never in parked state or if queuing time exceeds max allowable 
 	 */
 	public boolean isSatisfied() {
+		
+		if (isParked) {
+			
+			return true;
+			
+		}
+		
+		else if ((!inQueue) || (this.timeQueued > Constants.MAXIMUM_QUEUE_TIME)) {
+			
+			return false;
+			
+		}
+		return false;
 	}
 	
 	/* (non-Javadoc)
@@ -190,6 +245,12 @@ public abstract class Vehicle {
 	 * @return true if vehicle was or is in a parked state, false otherwise 
 	 */
 	public boolean wasParked() {
+		if (isParked){
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -197,5 +258,11 @@ public abstract class Vehicle {
 	 * @return true if vehicle was or is in a queued state, false otherwise 
 	 */
 	public boolean wasQueued() {
+		if (inQueue){
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

@@ -11,6 +11,7 @@
 package asgn2Vehicles;
 
 import asgn2Exceptions.VehicleException;
+import asgn2Vehicles.Vehicle;
 
 /**
  * The MotorCycle class is a 'specialisation' of the Vehicle class to cater for motorcycles
@@ -29,5 +30,14 @@ public class MotorCycle extends Vehicle {
 	 * @throws VehicleException if arrivalTime is <= 0  
 	 */
 	public MotorCycle(String vehID, int arrivalTime) throws VehicleException {
+		
+		super(vehID, arrivalTime);
+		
+		if (arrivalTime <= 0) {
+			
+			throw new VehicleException("The time of arrival is invalid.");
+			
+		}
+		
 	}
 }

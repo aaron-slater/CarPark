@@ -50,8 +50,7 @@ import java.util.TimerTask;
  */
 public abstract class Vehicle {
 	boolean isParked,
-	inQueue,
-	wasSatisfied;
+	inQueue;
 	public String VehicleID;
 	public int timeOfArrival, timeQueued, timeDeparted, timeParked, timeExitedQueue;
 	public Timer queueTimer;
